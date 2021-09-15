@@ -1,18 +1,10 @@
 defmodule Elixirsim do
-  @moduledoc """
-  Documentation for `Elixirsim`.
-  """
+  require Spawner
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Elixirsim.hello()
-      :world
-
+  Runs the simulation
   """
-  def hello do
-    :world
+  def start do
+    pids = Spawner.spawn(100)
   end
 end
