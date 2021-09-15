@@ -1,5 +1,5 @@
 defmodule Simulator do
-  require Spawner
+  require SpawnServer
   require Mutator
   require GeneExpressor
 
@@ -8,7 +8,8 @@ defmodule Simulator do
   """
   def start do
     # Spawn the organisms
-    pids = Spawner.spawn(100)
+    SpawnServer.start([])
+    pids = SpawnServer.spawn(100, 10)
 
     # Iterate through n rounds of mutations
     sim_cycles = 10
