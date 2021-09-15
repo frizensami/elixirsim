@@ -14,28 +14,49 @@ defmodule Dna do
   @doc """
   Do a continuous sequence of mutations
   """
-  def n_random_mutations(dna, 0) when is_list(dna) do
+  def n_random_mutations(dna, 0, _probs) when is_list(dna) do
     dna
   end
 
-  def n_random_mutations(dna, n) when is_list(dna) and is_number(n) do
-    random_mutation(dna) |> n_random_mutations(n - 1)
+  def n_random_mutations(dna, n, probs) when is_list(dna) and is_number(n) do
+    random_mutation(dna, probs) |> n_random_mutations(n - 1, probs)
   end
 
   @doc """
   Choose a random mutation from the available ones.
+  Pass the relative probabilities of mutation for each mutation type.
+  E.g., %{deletion: 0.2, insertion: 0.3, replacement: 0.4}
+  The probabilities have to sum to less than 1. If so, there is a chance that no mutation is applied.
   """
-  def random_mutation(dna) when is_list(dna) do
+  def random_mutation(dna, %{deletion: delprob, insertion: insprob, replacement: replaceprob})
+      when is_list(dna) do
+    # Contract that the 
+    if delprob + insprob + replaceprob > 1,
+      do: raise("Mutation probabilities must be less than 1")
+
     mutations = [
       &Dna.random_point_deletion/1,
       &Dna.random_point_insertion/1,
-      &Dna.random_point_insertion/1,
-      &Dna.random_point_replacement/1,
       &Dna.random_point_replacement/1
     ]
 
-    fx = Enum.random(mutations)
-    fx.(dna)
+    prob_boundaries = {delprob, delprob + insprob, delprob + insprob + replaceprob}
+    prob = :rand.uniform_real()
+
+    # Check which mutation to run, if any
+    case prob do
+      _ when prob < elem(prob_boundaries, 0) ->
+        random_point_deletion(dna)
+
+      _ when prob < elem(prob_boundaries, 1) ->
+        random_point_insertion(dna)
+
+      _ when prob < elem(prob_boundaries, 2) ->
+        random_point_replacement(dna)
+
+      _ ->
+        dna
+    end
   end
 
   @doc """

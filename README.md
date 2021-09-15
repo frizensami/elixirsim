@@ -8,4 +8,5 @@ The most fascinating thing about Elixir/BEAM is the ability to run a large numbe
 What if we could run a large-scale DNA-based simulation involving a million organisms?
 
 ## Individuals
-Every individual organism is modelled as a GenServer that has its DNA as its state
+Every individual organism is modelled as a GenServer that has its DNA as its state. 
+
