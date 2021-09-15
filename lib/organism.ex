@@ -12,12 +12,16 @@ defmodule Organism do
   @doc """
   Starts a genserver with this module's name
   """
-  def start_link(default_genome) when is_list(default_genome) do
+  def start(default_genome) when is_list(default_genome) do
     GenServer.start(__MODULE__, default_genome)
   end
 
   def get_genome(pid) do
     GenServer.call(pid, :genome)
+  end
+
+  def update_genome(pid, genome) do
+    GenServer.cast(pid, {:set, genome})
   end
 
   ## Server (Callbacks)
