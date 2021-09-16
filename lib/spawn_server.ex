@@ -20,6 +20,20 @@ defmodule SpawnServer do
     GenServer.call(__MODULE__, {:spawn, n, init_genome_length})
   end
 
+  @doc """
+  Kill process with specific PID
+  """
+  def kill(pid) do
+    GenServer.call(__MODULE__, {:kill, pid})
+  end
+
+  @doc """
+  Spawns n organisms and returns all their PIDs
+  """
+  def get_pids() do
+    GenServer.call(__MODULE__, :get)
+  end
+
   ## Server (Callbacks)
 
   @impl true
@@ -30,9 +44,6 @@ defmodule SpawnServer do
   end
 
   @impl true
-  @doc """
-  Spawns n organisms and returns all their PIDs
-  """
   def handle_call({:spawn, n, init_genome_length}, _from, _state) do
     pids =
       for i <- 0..(n - 1) do
@@ -43,6 +54,22 @@ defmodule SpawnServer do
       end
 
     state = pids
+    {:reply, state, state}
+  end
+
+  @impl true
+  def handle_call({:kill, pid}, _from, state) do
+    try do
+      Process.exit(pid, :kill)
+      newstate = state -- [pid]
+      {:reply, newstate, newstate}
+    rescue
+      RuntimeError -> {:reply, state, state}
+    end
+  end
+
+  @impl true
+  def handle_call(:get, _from, state) do
     {:reply, state, state}
   end
 end

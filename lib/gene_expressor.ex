@@ -32,7 +32,7 @@ defmodule GeneExpressor do
 
   def handle_die(pid) do
     IO.puts("Killing PID #{inspect(pid)} due to gene expression")
-    Process.exit(pid, :kill)
+    SpawnServer.kill(pid)
   end
 
   def handle_reproduce(pid, pids) do

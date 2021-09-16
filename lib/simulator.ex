@@ -9,11 +9,11 @@ defmodule Simulator do
   def start do
     # Spawn the organisms
     SpawnServer.start([])
-    pids = SpawnServer.spawn(100, 10)
+    pids = SpawnServer.spawn(100_000, 10)
 
     # Iterate through n rounds of mutations
-    sim_cycles = 10
-    sleep_time_ms = 100
+    sim_cycles = 10000
+    sleep_time_ms = 0
     pop_mutation_fraction = 0.2
 
     simulate(pids, sim_cycles, sleep_time_ms, pop_mutation_fraction)
@@ -45,8 +45,11 @@ defmodule Simulator do
 
     Task.await_many(tasks)
 
+    # Update list of PIDs given that certain tasks have died
+    newpids = SpawnServer.get_pids()
+
     # Sleep between sim cycles to let mutations catch up
     :timer.sleep(sleep_time_ms)
-    simulate(pids, cycles - 1, sleep_time_ms, pop_mutation_fraction)
+    simulate(newpids, cycles - 1, sleep_time_ms, pop_mutation_fraction)
   end
 end
